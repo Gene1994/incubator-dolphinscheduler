@@ -90,14 +90,14 @@ public class MailUtils {
     public static Map<String,Object> sendMails(Collection<String> receivers, Collection<String> receiversCc, String title, String content, ShowType showType) {
         Map<String,Object> retMap = new HashMap<>();
         retMap.put(Constants.STATUS, false);
-        
+
         // if there is no receivers && no receiversCc, no need to process
         if (CollectionUtils.isEmpty(receivers) && CollectionUtils.isEmpty(receiversCc)) {
             return retMap;
         }
 
-        receivers.removeIf((from) -> (StringUtils.isEmpty(from)));
-        
+        receivers.removeIf(StringUtils::isEmpty);
+
         if (showType == ShowType.TABLE || showType == ShowType.TEXT){
             // send email
             HtmlEmail email = new HtmlEmail();
@@ -185,7 +185,7 @@ public class MailUtils {
 
     /**
      * get MimeMessage
-     * @param receivers
+     * @param receivers receivers
      * @return the MimeMessage
      * @throws MessagingException
      */
@@ -229,8 +229,7 @@ public class MailUtils {
             }
         };
 
-        Session session = Session.getInstance(props, auth);
-        return session;
+        return Session.getInstance(props, auth);
     }
 
     /**
@@ -336,7 +335,7 @@ public class MailUtils {
      */
     private static void handleException(Collection<String> receivers, Map<String, Object> retMap, Exception e) {
         logger.error("Send email to {} failed {}", receivers, e);
-        retMap.put(Constants.MESSAGE, "Send email to {" + StringUtils.join(receivers, ",") + "} failed，" + e.toString());
+        retMap.put(Constants.MESSAGE, "Send email to {" + String.join(",", receivers) + "} failed，" + e.toString());
     }
 
 }
